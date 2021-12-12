@@ -15,6 +15,10 @@ RUN chmod +x /tini
 
 ENTRYPOINT ["/tini", "--"]
 
+WORKDIR /home/user/streamer
+
+COPY . .
+
 RUN apt-get update -y && \
 	apt-get upgrade -y && \
 	apt-get install -y \
@@ -37,18 +41,18 @@ RUN apt-get update -y && \
 		fonts-wqy-zenhei && \
 	echo 'streamer ALL=(ALL:ALL) NOPASSWD:ALL' >> /etc/sudoers && \
 	# Bundle Firefox plugin to enable H264 codec support for WebRTC
-	curl -s http://ciscobinary.openh264.org/libopenh264-2.1.1-linux64.6.so.bz2 -o /tmp/libopenh264-2.1.1-linux64.6.so.bz2 && \
-    chmod a+r /tmp/libopenh264-2.1.1-linux64.6.so.bz2 && \
+	curl -s http://ciscobinary.openh264.org/openh264-linux64-2e1774ab6dc6c43debb0b5b628bdf122a391d521.zip -o /tmp/openh264-1.8.1.1.zip && \
+    chmod a+r /tmp/openh264-1.8.1.1.zip && \
 	# Clean
 	apt-get clean autoclean && \
 	apt-get autoremove -y && \
-	rm -rf /var/lib/{apt,dpkg,cache,log}/
+	rm -rf /var/lib/{apt,dpkg,cache,log}/ && \
+    # Permissions
+    chmod +x entrypoint.sh && \
+    chmod +x ffmpeg.sh && \
+    chmod +x firefox.sh
 
 USER streamer
-
-WORKDIR /home/user/streamer
-
-COPY . .
 
 CMD ["./entrypoint.sh"]
 
